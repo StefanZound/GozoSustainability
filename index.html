@@ -18,7 +18,7 @@
             color: var(--text-color);
             line-height: 1.6;
             margin: 0;
-            padding: 0;
+            padding: 20px 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -35,6 +35,7 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             text-align: center;
             border: 1px solid #30363d;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -48,19 +49,12 @@
             margin-bottom: 20px;
         }
 
-        .quote {
-            font-style: italic;
-            background-color: rgba(251, 197, 49, 0.1);
-            border-left: 4px solid var(--primary);
-            padding: 15px;
-            margin: 20px 0;
-            text-align: left;
-            border-radius: 0 8px 8px 0;
-        }
-
         .deadline {
             color: #ff7675;
             font-weight: bold;
+            background-color: rgba(255, 118, 117, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
         }
 
         .input-group {
@@ -72,17 +66,30 @@
             display: block;
             margin-bottom: 8px;
             font-weight: bold;
+            color: var(--primary);
         }
 
-        input[type="text"] {
+        select, textarea {
             width: 100%;
             padding: 12px;
             border-radius: 6px;
             border: 1px solid #30363d;
             background-color: #0d1117;
-            color: #fff;
+            color: #e6edf3;
             font-size: 1rem;
             box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        select {
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 250px;
+            line-height: 1.5;
         }
 
         .btn {
@@ -107,7 +114,7 @@
         }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 25px;
             font-size: 0.9rem;
             color: #8b949e;
         }
@@ -117,20 +124,23 @@
 
     <div class="container">
         <h1>✨ Make Your Voice Heard!</h1>
-        <p><strong>Dwejra is the best remaining dark site in the Maltese Islands</strong>, offering a stunning view of the night sky. We need your help to protect it from light pollution.</p>
+        <p><strong>Dwejra is the best remaining dark site in the Maltese Islands.</strong> We need your help to protect it from light pollution.</p>
         
-        <p>Send an email to the Environment and Resources Authority (ERA) to demand that Dwejra's dark skies are preserved. <span class="deadline">Deadline: 3rd of March 2026.</span></p>
-
-        <div class="quote">
-            "Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight."
-        </div>
+        <p>Send an email to the Environment and Resources Authority (ERA) to demand that Dwejra's dark skies are preserved. <br><span class="deadline">Urgent Deadline: 3rd of March 2026.</span></p>
 
         <div class="input-group">
-            <label for="userName">Enter your name to sign the email:</label>
-            <input type="text" id="userName" placeholder="e.g., Maria Borg" oninput="updateEmailLink()">
+            <label for="templateSelect">1. Choose a starting message:</label>
+            <select id="templateSelect" onchange="loadTemplate()">
+                <option value="0">Standard Message</option>
+                <option value="1">Passionate Message</option>
+                <option value="2">Formal Submission</option>
+            </select>
+
+            <label for="messageBody">2. Customize it (Don't forget to add your name!)</label>
+            <textarea id="messageBody" oninput="updateEmailLink()"></textarea>
         </div>
 
-        <a href="#" id="emailBtn" class="btn">✉️ Generate Email Now</a>
+        <a href="#" id="emailBtn" class="btn">✉️ Open Email App to Send</a>
 
         <div class="footer">
             Clicking the button will open your default email app with the message ready to send to era.policy@era.org.mt (CC: savingdwejra@gmail.com).
@@ -138,26 +148,46 @@
     </div>
 
     <script>
+        // Array of different email templates
+        const templates = [
+            "Dear ERA Policy Team,\n\nI am writing to express my strong support for protecting Dwejra's status as a dark sky heritage area.\n\n\"Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\"\n\nPlease protect our natural night sky so future generations can continue to enjoy it.\n\nSincerely,\n[Type Your Name Here]",
+            
+            "To the Environment and Resources Authority,\n\nDwejra is a unique gem for stargazers and local wildlife, and we cannot afford to lose it to light pollution. \n\nMy demand regarding the policy is clear:\n\"Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\"\n\nLet's preserve the natural beauty of the Maltese Islands.\n\nRegards,\n[Type Your Name Here]",
+            
+            "Dear Sir/Madam,\n\nI am submitting my formal feedback regarding the lighting policy at Dwejra. To preserve its ecological and astronomical value, the following condition must be strictly enforced:\n\n\"Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\"\n\nThank you for registering my submission on this urgent matter.\n\nYours faithfully,\n[Type Your Name Here]"
+        ];
+
+        function loadTemplate() {
+            const select = document.getElementById('templateSelect');
+            const textarea = document.getElementById('messageBody');
+            
+            // Load the selected template into the textarea
+            textarea.value = templates[select.value];
+            
+            // Update the email link to match the new text
+            updateEmailLink();
+        }
+
         function updateEmailLink() {
-            const name = document.getElementById('userName').value || '[Your Name]';
             const emailTo = 'era.policy@era.org.mt';
             const emailCc = 'savingdwejra@gmail.com';
             const subject = encodeURIComponent('Protect Dwejra\'s Dark Sky');
             
-            // Drafting the email body with line breaks
-            const bodyText = `Dear ERA Policy Team,\n\nI am writing to express my strong support for protecting Dwejra's status as a dark sky heritage area.\n\nLights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\n\nPlease protect our natural night sky.\n\nSincerely,\n${name}`;
-            
+            // Grab whatever text is currently in the editable text box
+            const bodyText = document.getElementById('messageBody').value;
             const body = encodeURIComponent(bodyText);
             
-            // Creating the mailto link
+            // Generate the mailto link
             const mailtoLink = `mailto:${emailTo}?cc=${emailCc}&subject=${subject}&body=${body}`;
             
-            // Updating the button
+            // Apply it to the button
             document.getElementById('emailBtn').href = mailtoLink;
         }
 
-        // Initialize the link on page load
-        window.onload = updateEmailLink;
+        // Run these functions as soon as the page loads to set the initial state
+        window.onload = function() {
+            loadTemplate();
+        };
     </script>
 </body>
 </html>
