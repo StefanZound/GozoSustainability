@@ -60,6 +60,10 @@
         .input-group {
             margin: 25px 0;
             text-align: left;
+            background-color: #0d1117;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
         }
 
         label {
@@ -69,27 +73,28 @@
             color: var(--primary);
         }
 
-        select, textarea {
+        select, textarea, input[type="text"] {
             width: 100%;
             padding: 12px;
             border-radius: 6px;
             border: 1px solid #30363d;
-            background-color: #0d1117;
+            background-color: #161b22;
             color: #e6edf3;
             font-size: 1rem;
             box-sizing: border-box;
             font-family: inherit;
+            margin-bottom: 20px;
         }
 
         select {
-            margin-bottom: 15px;
             cursor: pointer;
         }
 
         textarea {
             resize: vertical;
-            min-height: 250px;
+            min-height: 200px;
             line-height: 1.5;
+            margin-bottom: 0;
         }
 
         .btn {
@@ -106,6 +111,7 @@
             border: none;
             width: 100%;
             box-sizing: border-box;
+            margin-top: 10px;
         }
 
         .btn:hover {
@@ -123,24 +129,27 @@
 <body>
 
     <div class="container">
-        <h1>✨ Make Your Voice Heard!</h1>
+        <h1>Make Your Voice Heard!</h1>
         <p><strong>Dwejra is the best remaining dark site in the Maltese Islands.</strong> We need your help to protect it from light pollution.</p>
         
         <p>Send an email to the Environment and Resources Authority (ERA) to demand that Dwejra's dark skies are preserved. <br><span class="deadline">Urgent Deadline: 3rd of March 2026.</span></p>
 
         <div class="input-group">
-            <label for="templateSelect">1. Choose a starting message:</label>
+            <label for="userName">1. Enter your full name:</label>
+            <input type="text" id="userName" placeholder="e.g., Maria Borg" oninput="updateEmailLink()">
+
+            <label for="templateSelect">2. Choose a starting message:</label>
             <select id="templateSelect" onchange="loadTemplate()">
                 <option value="0">Standard Message</option>
                 <option value="1">Passionate Message</option>
                 <option value="2">Formal Submission</option>
             </select>
 
-            <label for="messageBody">2. Customize it (Don't forget to add your name!)</label>
+            <label for="messageBody">3. Customize your message (Optional):</label>
             <textarea id="messageBody" oninput="updateEmailLink()"></textarea>
         </div>
 
-        <a href="#" id="emailBtn" class="btn">✉️ Open Email App to Send</a>
+        <a href="#" id="emailBtn" class="btn">Open Email App to Send</a>
 
         <div class="footer">
             Clicking the button will open your default email app with the message ready to send to era.policy@era.org.mt (CC: savingdwejra@gmail.com).
@@ -148,13 +157,13 @@
     </div>
 
     <script>
-        // Array of different email templates
+        // Array of different email templates (Ending with just the sign-off)
         const templates = [
-            "Dear ERA Policy Team,\n\nI am writing to express my strong support for protecting Dwejra's status as a dark sky heritage area.\n\n\"Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\"\n\nPlease protect our natural night sky so future generations can continue to enjoy it.\n\nSincerely,\n[Type Your Name Here]",
+            "Dear ERA Policy Team,\n\nI am writing to express my strong support for protecting Dwejra's status as a dark sky heritage area.\n\n\"Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\"\n\nPlease protect our natural night sky so future generations can continue to enjoy it.\n\nSincerely,",
             
-            "To the Environment and Resources Authority,\n\nDwejra is a unique gem for stargazers and local wildlife, and we cannot afford to lose it to light pollution. \n\nMy demand regarding the policy is clear:\n\"Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\"\n\nLet's preserve the natural beauty of the Maltese Islands.\n\nRegards,\n[Type Your Name Here]",
+            "To the Environment and Resources Authority,\n\nDwejra is a unique gem for stargazers and local wildlife, and we cannot afford to lose it to light pollution. \n\nMy demand regarding the policy is clear:\n\"Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\"\n\nLet's preserve the natural beauty of the Maltese Islands.\n\nRegards,",
             
-            "Dear Sir/Madam,\n\nI am submitting my formal feedback regarding the lighting policy at Dwejra. To preserve its ecological and astronomical value, the following condition must be strictly enforced:\n\n\"Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\"\n\nThank you for registering my submission on this urgent matter.\n\nYours faithfully,\n[Type Your Name Here]"
+            "Dear Sir/Madam,\n\nI am submitting my formal feedback regarding the lighting policy at Dwejra. To preserve its ecological and astronomical value, the following condition must be strictly enforced:\n\n\"Lights at Dwejra must remain switched off between sunset and sunrise, and not allowed to remain switched on until midnight.\"\n\nThank you for registering my submission on this urgent matter.\n\nYours faithfully,"
         ];
 
         function loadTemplate() {
@@ -173,9 +182,13 @@
             const emailCc = 'savingdwejra@gmail.com';
             const subject = encodeURIComponent('Protect Dwejra\'s Dark Sky');
             
-            // Grab whatever text is currently in the editable text box
-            const bodyText = document.getElementById('messageBody').value;
-            const body = encodeURIComponent(bodyText);
+            // Grab the name and the custom message
+            const name = document.getElementById('userName').value || '[Your Name]';
+            const customMessage = document.getElementById('messageBody').value;
+            
+            // Combine them: Message + Line Break + Name
+            const finalBodyText = `${customMessage}\n${name}`;
+            const body = encodeURIComponent(finalBodyText);
             
             // Generate the mailto link
             const mailtoLink = `mailto:${emailTo}?cc=${emailCc}&subject=${subject}&body=${body}`;
